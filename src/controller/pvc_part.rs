@@ -1,7 +1,7 @@
 use itertools::Itertools;
-use tracing::{warn, debug};
 use std::collections::BTreeMap;
-use std::path::{Path, Component};
+use std::path::{Component, Path};
+use tracing::{debug, warn};
 
 use crate::opts::ConfigV1;
 

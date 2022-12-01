@@ -1,18 +1,22 @@
 use std::{sync::Arc, time::Duration};
 
 use futures::StreamExt;
-use kube::{Client, runtime::{Controller, controller::Action}, api::ListParams, Api};
-use kube::ResourceExt;
 use kube::Resource;
+use kube::ResourceExt;
+use kube::{
+    api::ListParams,
+    runtime::{controller::Action, Controller},
+    Api, Client,
+};
 
 mod crd;
+pub mod db;
 mod finalizer;
 mod pvc_part;
-pub mod db;
 
 use crd::PvPart;
-use sled::{transaction::{TransactionError, ConflictableTransactionError}};
-use tracing::{warn, info};
+use sled::transaction::{ConflictableTransactionError, TransactionError};
+use tracing::{info, warn};
 
 use crate::opts::ConfigV1;
 
@@ -38,7 +42,6 @@ pub async fn controller(client: Client, config: &ConfigV1, db: Db) -> Result<(),
 
     Ok(())
 }
-
 
 struct ContextData {
     client: Client,
@@ -67,11 +70,25 @@ async fn reconcile(pv_part: Arc<PvPart>, context: Arc<ContextData>) -> Result<Ac
     return match determine_action(&pv_part) {
         PvPartAction::Update => {
             finalizer::add(client.clone(), &name, &namespace).await?;
-            pvc_part::deploy(&pv_part.spec, &context.config, &namespace, &name, &context.db).await?;
+            pvc_part::deploy(
+                &pv_part.spec,
+                &context.config,
+                &namespace,
+                &name,
+                &context.db,
+            )
+            .await?;
             Ok(Action::requeue(Duration::from_secs(10)))
         }
         PvPartAction::Delete => {
-            pvc_part::delete(&pv_part.spec, &context.config, &namespace, &name, &context.db).await?;
+            pvc_part::delete(
+                &pv_part.spec,
+                &context.config,
+                &namespace,
+                &name,
+                &context.db,
+            )
+            .await?;
             finalizer::delete(client, &name, &namespace).await?;
             Ok(Action::await_change())
         }
@@ -84,8 +101,8 @@ fn determine_action(pv_part: &PvPart) -> PvPartAction {
         PvPartAction::Delete
     } else {
         PvPartAction::Update
-    // } else {
-    //     PvPartAction::NoOp
+        // } else {
+        //     PvPartAction::NoOp
     }
 }
 
@@ -115,7 +132,7 @@ pub enum Error {
     #[error("database is corrupted")]
     DbDataError,
     #[error("can't keep a record of reconciliation: {0}")]
-    TxError(#[from] sled::Error)
+    TxError(#[from] sled::Error),
 }
 
 impl From<TransactionError<Error>> for Error {

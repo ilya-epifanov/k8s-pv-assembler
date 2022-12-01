@@ -1,6 +1,6 @@
 use std::net::SocketAddr;
 
-use axum::{Router, response::IntoResponse, http::StatusCode, Json, routing::get};
+use axum::{http::StatusCode, response::IntoResponse, routing::get, Json, Router};
 use axum_prometheus::PrometheusMetricLayer;
 use serde_json::json;
 use tracing::info;

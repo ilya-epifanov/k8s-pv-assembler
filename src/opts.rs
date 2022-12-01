@@ -1,4 +1,7 @@
-use std::{collections::{HashMap, HashSet}, fs::File};
+use std::{
+    collections::{HashMap, HashSet},
+    fs::File,
+};
 
 use serde::Deserialize;
 use tracing_subscriber::EnvFilter;
@@ -7,7 +10,7 @@ use tracing_subscriber::EnvFilter;
 #[serde(tag = "version")]
 pub enum Config {
     #[serde(rename = "1")]
-    V1(ConfigV1)
+    V1(ConfigV1),
 }
 
 #[derive(Clone, Deserialize)]
@@ -26,10 +29,10 @@ impl Opts {
     pub fn init_from_env() -> Result<ConfigV1, anyhow::Error> {
         let filter = EnvFilter::from_default_env();
         tracing_subscriber::fmt().with_env_filter(filter).init();
-    
+
         let config: Config = serde_yaml::from_reader(File::open("/conf/pv-assembler.yaml")?)?;
         Ok(match config {
-            Config::V1(config) => config
+            Config::V1(config) => config,
         })
     }
 }
