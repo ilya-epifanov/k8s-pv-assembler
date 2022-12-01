@@ -1,0 +1,35 @@
+use std::collections::HashMap;
+
+use kube::CustomResource;
+use schemars::JsonSchema;
+use serde::{Deserialize, Serialize};
+
+#[derive(CustomResource, Serialize, Deserialize, Debug, PartialEq, Clone, JsonSchema)]
+#[kube(
+    group = "ilya-epifanov.github.com",
+    version = "v1",
+    kind = "PvPart",
+    plural = "pv-parts",
+    derive = "PartialEq",
+    namespaced
+)]
+pub struct PvPartSpec {
+    pub target_volume: String,
+    pub files: HashMap<String, String>,
+}
+
+#[cfg(test)]
+mod tests {
+    use std::{fs::File, path::Path};
+
+    use kube::CustomResourceExt;
+
+    use super::*;
+
+    #[test]
+    fn generate_crd() -> Result<(), anyhow::Error> {
+        let crd_yaml_file = File::create(Path::new(env!("CARGO_MANIFEST_DIR")).join("charts/pv-assembler/templates").join("crd.yaml"))?;
+        serde_yaml::to_writer(crd_yaml_file, &PvPart::crd())?;
+        Ok(())
+    }
+}

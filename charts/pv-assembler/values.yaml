@@ -1,0 +1,28 @@
+image:
+  # -- Image repository
+  repository: smartislav/k8s-pv-assembler
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+  # -- if set, override the image tag whose default is the chart appVersion.
+  tag: ""
+
+# -- Image pull secrets
+imagePullSecrets: []
+
+# -- Set higher levels for more verbose logging
+logLevel: debug
+
+dataVolumeClaimTemplateSpec: ~
+#   accessModes: ["ReadWriteOnce"]
+#   storageClassName: "rook-ceph-block"
+#   resources:
+#     requests:
+#       storage: 32Mi
+
+volumes: []
+  # - claimName: target-volume
+  #   # -- optional, defaults to pvName
+  #   localName: target-volume
+  #   allowedNamespaces:
+  #     - namespace1
+  #     - namespace2

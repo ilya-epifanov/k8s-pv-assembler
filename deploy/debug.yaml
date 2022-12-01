@@ -1,0 +1,22 @@
+---
+apiVersion: ilya-epifanov.github.com/v1
+kind: PvPart
+metadata:
+  name: pv-part-1
+  namespace: default
+spec:
+  target_volume: pv-claim-volume-1
+  files:
+    1.txt: hello
+    dir/1.txt: hey ya
+---
+apiVersion: ilya-epifanov.github.com/v1
+kind: PvPart
+metadata:
+  name: pv-part-2
+  namespace: default
+spec:
+  target_volume: pv-claim-volume-1
+  files:
+    2.txt: hello
+    dir/2.txt: hey ya

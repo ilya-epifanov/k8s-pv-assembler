@@ -1,0 +1,32 @@
+[package]
+name = "k8s-pv-assembler"
+version = "0.1.1"
+authors = ["Ilya Epifanov <elijah.epifanov@gmail.com>"]
+keywords = ["kubernetes", "k8s"]
+repository = "https://github.com/ilya-epifanov/k8s-pv-assembler"
+edition = "2021"
+
+[dependencies]
+kube = { version = "0.76", features = ["client", "derive", "runtime"] }
+axum = "0.5"
+axum-server = "0.4"
+axum-prometheus = "0.1"
+tokio = { version = "1", features = ["rt", "macros"] }
+futures = "0.3"
+anyhow = "1"
+thiserror = "1"
+rustls = "0.18"
+k8s-openapi = { version = "0.16", features = ["v1_22"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml = "0.9"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+itertools = "0.10"
+schemars = "0.8"
+sled = "0.34"
+format-bytes = "0.1"
+
+[[bin]]
+name = "pv-assembler"
+path = "src/main.rs"

@@ -1,0 +1,40 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: pv-parts.ilya-epifanov.github.com
+spec:
+  group: ilya-epifanov.github.com
+  names:
+    categories: []
+    kind: PvPart
+    plural: pv-parts
+    shortNames: []
+    singular: pv-part
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns: []
+    name: v1
+    schema:
+      openAPIV3Schema:
+        description: Auto-generated derived type for PvPartSpec via `CustomResource`
+        properties:
+          spec:
+            properties:
+              files:
+                additionalProperties:
+                  type: string
+                type: object
+              target_volume:
+                type: string
+            required:
+            - files
+            - target_volume
+            type: object
+        required:
+        - spec
+        title: PvPart
+        type: object
+    served: true
+    storage: true
+    subresources: {}

@@ -1,0 +1,9 @@
+---
+image:
+  tag: latest
+
+volumes:
+  - claimName: pv-claim-volume-1
+    allowedNamespaces:
+      - default
+      - jobs
