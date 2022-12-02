@@ -3,13 +3,14 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: pv-assembler
-  namespace: default
+  namespace: {{ .Release.Namespace | quote }}
 automountServiceAccountToken: true
 ---
-kind: ClusterRole
+kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: assemble-pvs
+  namespace: {{ .Release.Namespace | quote }}
 rules:
   - apiGroups: ["ilya-epifanov.github.com"]
     resources: ["pv-parts"]
@@ -22,16 +23,17 @@ rules:
     resources: ["events"]
     verbs: ["create"]
 ---
-kind: ClusterRoleBinding
+kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: pv-assembler-binding
+  namespace: {{ .Release.Namespace | quote }}
 subjects:
 - kind: ServiceAccount
-  namespace: default
+  namespace: {{ .Release.Namespace | quote }}
   name: pv-assembler
 roleRef:
-  kind: ClusterRole
+  kind: Role
   name: assemble-pvs
   apiGroup: rbac.authorization.k8s.io
 ---
@@ -62,9 +64,9 @@ spec:
             name: pv-assembler-conf
             defaultMode: 420
       {{- range .Values.volumes }}
-        - name: volume-{{ default .claimName .localName }}
+        - name: volume-{{ . }}
           persistentVolumeClaim:
-            claimName: {{ .claimName }}
+            claimName: "{{ . }}"
       {{- end }}
       containers:
         - name: pv-assembler
@@ -78,8 +80,8 @@ spec:
               mountPath: /data
           {{- end }}
           {{- range .Values.volumes }}
-            - name: volume-{{ default .claimName .localName }}
-              mountPath: /volumes/{{ default .claimName .localName }}
+            - name: volume-{{ . }}
+              mountPath: /volumes/{{ . }}
           {{- end }}
           resources:
             limits:
@@ -88,6 +90,10 @@ spec:
           env:
             - name: RUST_LOG
               value: hyper=warn,tower=warn,sled=warn,kube=info,{{ .Values.logLevel }}
+            - name: PV_ASSEMBLER_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           ports:
             - containerPort: 80
   {{- with .Values.dataVolumeClaimTemplateSpec }}

@@ -30,7 +30,7 @@ mod tests {
     fn generate_crd() -> Result<(), anyhow::Error> {
         let crd_yaml_file = File::create(
             Path::new(env!("CARGO_MANIFEST_DIR"))
-                .join("charts/pv-assembler/templates")
+                .join("charts/pv-assembler/crds")
                 .join("crd.yaml"),
         )?;
         serde_yaml::to_writer(crd_yaml_file, &PvPart::crd())?;

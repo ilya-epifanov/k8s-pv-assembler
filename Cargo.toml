@@ -1,6 +1,6 @@
 [package]
 name = "k8s-pv-assembler"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["Ilya Epifanov <elijah.epifanov@gmail.com>"]
 keywords = ["kubernetes", "k8s"]
 repository = "https://github.com/ilya-epifanov/k8s-pv-assembler"

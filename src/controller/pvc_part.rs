@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 use std::path::{Component, Path};
 use tracing::{debug, warn};
 
-use crate::opts::ConfigV1;
+use crate::opts::Opts;
 
 use super::crd::PvPartSpec;
 use super::db::Db;
@@ -11,18 +11,17 @@ use super::Error;
 
 pub async fn deploy(
     spec: &PvPartSpec,
-    config: &ConfigV1,
+    config: &Opts,
     namespace: &str,
     name: &str,
     db: &Db,
 ) -> Result<(), Error> {
     debug!("deploying pv-part");
-    let target_volume_config = config
-        .volumes
-        .get(&spec.target_volume)
-        .ok_or_else(|| Error::UnknownVolume(spec.target_volume.to_owned()))?;
+    if !config.volumes.contains(&spec.target_volume) {
+        return Err(Error::VolumeNotMounted(spec.target_volume.to_owned()));
+    }
 
-    if !target_volume_config.allowed_namespaces.contains(namespace) {
+    if config.namespace != namespace {
         return Err(Error::Forbidden(
             namespace.to_owned(),
             spec.target_volume.to_owned(),
@@ -80,7 +79,9 @@ pub async fn deploy(
                     assert!(path.starts_with(&volume_path));
 
                     debug!("removing file {path:?}");
-                    std::fs::remove_file(path)?;
+                    if path.is_file() {
+                        std::fs::remove_file(path)?;
+                    }
                     let parent_dir = path.parent();
                     if let Some(parent_dir) = parent_dir {
                         let parent_dir = parent_dir.canonicalize()?;
@@ -100,18 +101,17 @@ pub async fn deploy(
 
 pub async fn delete(
     spec: &PvPartSpec,
-    config: &ConfigV1,
+    config: &Opts,
     namespace: &str,
     name: &str,
     db: &Db,
 ) -> Result<(), Error> {
     debug!("deleting pv-part");
-    let target_volume_config = config
-        .volumes
-        .get(&spec.target_volume)
-        .ok_or_else(|| Error::UnknownVolume(spec.target_volume.to_owned()))?;
+    if !config.volumes.contains(&spec.target_volume) {
+        return Err(Error::VolumeNotMounted(spec.target_volume.to_owned()));
+    }
 
-    if !target_volume_config.allowed_namespaces.contains(namespace) {
+    if config.namespace != namespace {
         return Err(Error::Forbidden(
             namespace.to_owned(),
             spec.target_volume.to_owned(),
@@ -129,7 +129,9 @@ pub async fn delete(
             assert!(path.starts_with(&volume_path));
 
             debug!("removing file {path:?}");
-            std::fs::remove_file(path)?;
+            if path.is_file() {
+                std::fs::remove_file(path)?;
+            }
             let parent_dir = path.parent();
             if let Some(parent_dir) = parent_dir {
                 let parent_dir = parent_dir.canonicalize()?;

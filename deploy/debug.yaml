@@ -2,21 +2,61 @@
 apiVersion: ilya-epifanov.github.com/v1
 kind: PvPart
 metadata:
-  name: pv-part-1
-  namespace: default
+  name: pv-part-1-1
+  namespace: pv1
 spec:
   target_volume: pv-claim-volume-1
   files:
-    1.txt: hello
-    dir/1.txt: hey ya
+    1.txt: hello 1
+---
+apiVersion: ilya-epifanov.github.com/v1
+kind: PvPart
+metadata:
+  name: pv-part-1-2
+  namespace: pv1
+spec:
+  target_volume: pv-claim-volume-1
+  files:
+    dir/1.txt: hey ya 1
 ---
 apiVersion: ilya-epifanov.github.com/v1
 kind: PvPart
 metadata:
   name: pv-part-2
-  namespace: default
+  namespace: pv1
+spec:
+  target_volume: pv-claim-volume-2
+  files:
+    2.txt: hello 2
+    dir/2.txt: hey ya 2
+---
+apiVersion: ilya-epifanov.github.com/v1
+kind: PvPart
+metadata:
+  name: pv-part-1-1
+  namespace: pv2
 spec:
   target_volume: pv-claim-volume-1
   files:
-    2.txt: hello
-    dir/2.txt: hey ya
+    a.txt: hello a
+---
+apiVersion: ilya-epifanov.github.com/v1
+kind: PvPart
+metadata:
+  name: pv-part-1-2
+  namespace: pv2
+spec:
+  target_volume: pv-claim-volume-1
+  files:
+    dir/a.txt: hey ya a
+---
+apiVersion: ilya-epifanov.github.com/v1
+kind: PvPart
+metadata:
+  name: pv-part-2
+  namespace: pv2
+spec:
+  target_volume: pv-claim-volume-2
+  files:
+    b.txt: hello b
+    dir/b.txt: hey ya b

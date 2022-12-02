@@ -18,12 +18,12 @@ use crd::PvPart;
 use sled::transaction::{ConflictableTransactionError, TransactionError};
 use tracing::{info, warn};
 
-use crate::opts::ConfigV1;
+use crate::opts::Opts;
 
 use self::db::Db;
 
-pub async fn controller(client: Client, config: &ConfigV1, db: Db) -> Result<(), anyhow::Error> {
-    let crd_api: Api<PvPart> = Api::all(client.clone());
+pub async fn controller(client: Client, config: &Opts, db: Db) -> Result<(), anyhow::Error> {
+    let crd_api: Api<PvPart> = Api::namespaced(client.clone(), &config.namespace);
     let context: Arc<ContextData> = Arc::new(ContextData::new(client.clone(), config.clone(), db));
 
     Controller::new(crd_api.clone(), ListParams::default())
@@ -45,12 +45,12 @@ pub async fn controller(client: Client, config: &ConfigV1, db: Db) -> Result<(),
 
 struct ContextData {
     client: Client,
-    config: ConfigV1,
+    config: Opts,
     db: Db,
 }
 
 impl ContextData {
-    pub fn new(client: Client, config: ConfigV1, db: Db) -> Self {
+    pub fn new(client: Client, config: Opts, db: Db) -> Self {
         ContextData { client, config, db }
     }
 }
@@ -58,7 +58,6 @@ impl ContextData {
 enum PvPartAction {
     Update,
     Delete,
-    NoOp,
 }
 
 async fn reconcile(pv_part: Arc<PvPart>, context: Arc<ContextData>) -> Result<Action, Error> {
@@ -92,7 +91,6 @@ async fn reconcile(pv_part: Arc<PvPart>, context: Arc<ContextData>) -> Result<Ac
             finalizer::delete(client, &name, &namespace).await?;
             Ok(Action::await_change())
         }
-        PvPartAction::NoOp => Ok(Action::requeue(Duration::from_secs(10))),
     };
 }
 
@@ -101,8 +99,6 @@ fn determine_action(pv_part: &PvPart) -> PvPartAction {
         PvPartAction::Delete
     } else {
         PvPartAction::Update
-        // } else {
-        //     PvPartAction::NoOp
     }
 }
 
@@ -115,8 +111,6 @@ fn on_error(pv_part: Arc<PvPart>, error: &Error, _context: Arc<ContextData>) -> 
 pub enum Error {
     #[error("kubernetes reported error: {0}")]
     KubeError(#[from] kube::Error),
-    #[error("volume {0} is not configured")]
-    UnknownVolume(String),
     #[error("volume {0} is not mounted")]
     VolumeNotMounted(String),
     #[error("pv_part in namespace {0} isn't allowed to be merged into volume {1}")]
