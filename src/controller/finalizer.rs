@@ -4,15 +4,6 @@ use kube::{Api, Client, Error};
 use serde_json::{json, Value};
 use tracing::debug;
 
-/// Adds a finalizer record into an `Echo` kind of resource. If the finalizer already exists,
-/// this action has no effect.
-///
-/// # Arguments:
-/// - `client` - Kubernetes client to modify the `Echo` resource with.
-/// - `name` - Name of the `Echo` resource to modify. Existence is not verified
-/// - `namespace` - Namespace where the `Echo` resource with given `name` resides.
-///
-/// Note: Does not check for resource's existence for simplicity.
 pub async fn add(client: Client, name: &str, namespace: &str) -> Result<PvPart, Error> {
     debug!("adding finalizer");
     let api: Api<PvPart> = Api::namespaced(client, namespace);
@@ -26,15 +17,6 @@ pub async fn add(client: Client, name: &str, namespace: &str) -> Result<PvPart, 
     Ok(api.patch(name, &PatchParams::default(), &patch).await?)
 }
 
-/// Removes all finalizers from an `Echo` resource. If there are no finalizers already, this
-/// action has no effect.
-///
-/// # Arguments:
-/// - `client` - Kubernetes client to modify the `Echo` resource with.
-/// - `name` - Name of the `Echo` resource to modify. Existence is not verified
-/// - `namespace` - Namespace where the `Echo` resource with given `name` resides.
-///
-/// Note: Does not check for resource's existence for simplicity.
 pub async fn delete(client: Client, name: &str, namespace: &str) -> Result<PvPart, Error> {
     debug!("removing finalizer");
     let api: Api<PvPart> = Api::namespaced(client, namespace);

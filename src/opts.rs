@@ -1,5 +1,5 @@
 use std::{
-    collections::{HashMap, HashSet},
+    collections::HashSet,
     fs::File,
 };
 
@@ -15,24 +15,33 @@ pub enum Config {
 
 #[derive(Clone, Deserialize)]
 pub struct ConfigV1 {
-    pub volumes: HashMap<String, VolumeConfig>,
+    pub volumes: HashSet<String>,
 }
 
-#[derive(Clone, Deserialize)]
-pub struct VolumeConfig {
-    pub allowed_namespaces: HashSet<String>,
-}
 
-pub struct Opts {}
+#[derive(Clone)]
+pub struct Opts {
+    pub namespace: String,
+    pub volumes: HashSet<String>,
+}
 
 impl Opts {
-    pub fn init_from_env() -> Result<ConfigV1, anyhow::Error> {
+    pub fn new(namespace: String, config: ConfigV1) -> Self {
+        Self {
+            namespace,
+            volumes: config.volumes,
+        }
+    }
+
+    pub fn init_from_env() -> Result<Opts, anyhow::Error> {
         let filter = EnvFilter::from_default_env();
         tracing_subscriber::fmt().with_env_filter(filter).init();
 
+        let namespace = std::env::var("PV_ASSEMBLER_NAMESPACE")?;
+
         let config: Config = serde_yaml::from_reader(File::open("/conf/pv-assembler.yaml")?)?;
         Ok(match config {
-            Config::V1(config) => config,
+            Config::V1(config) => Opts::new(namespace, config),
         })
     }
 }

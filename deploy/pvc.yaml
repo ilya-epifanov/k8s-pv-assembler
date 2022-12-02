@@ -1,0 +1,56 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pv-claim-volume-1
+  namespace: pv1
+spec:
+  storageClassName: manual
+  volumeName: pv-volume-local-1-1
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pv-claim-volume-2
+  namespace: pv1
+spec:
+  storageClassName: manual
+  volumeName: pv-volume-local-1-2
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pv-claim-volume-1
+  namespace: pv2
+spec:
+  storageClassName: manual
+  volumeName: pv-volume-local-2-1
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pv-claim-volume-2
+  namespace: pv2
+spec:
+  storageClassName: manual
+  volumeName: pv-volume-local-2-2
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Mi

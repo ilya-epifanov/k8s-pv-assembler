@@ -813,7 +813,7 @@ dependencies = [
 
 [[package]]
 name = "k8s-pv-assembler"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "axum",

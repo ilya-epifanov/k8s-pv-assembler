@@ -3,5 +3,9 @@ apiVersion: kind.x-k8s.io/v1alpha4
 runtimeConfig:
   "admissionregistration.k8s.io/v1": "true"
 
+networking:
+  apiServerAddress: "10.188.14.1"
+  apiServerPort: 7010
+
 nodes:
   - role: control-plane

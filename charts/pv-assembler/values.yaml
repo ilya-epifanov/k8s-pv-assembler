@@ -20,9 +20,3 @@ dataVolumeClaimTemplateSpec: ~
 #       storage: 32Mi
 
 volumes: []
-  # - claimName: target-volume
-  #   # -- optional, defaults to pvName
-  #   localName: target-volume
-  #   allowedNamespaces:
-  #     - namespace1
-  #     - namespace2
