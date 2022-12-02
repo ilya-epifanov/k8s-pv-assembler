@@ -3,7 +3,5 @@ image:
   tag: latest
 
 volumes:
-  - claimName: pv-claim-volume-1
-    allowedNamespaces:
-      - default
-      - jobs
+  - pv-claim-volume-1
+  - pv-claim-volume-2

@@ -8,9 +8,7 @@ data:
   pv-assembler.yaml: |
     ---
     version: 1
-    {{- range .Values.volumes }}
     volumes:
-      {{ default .claimName .localName }}:
-        allowed_namespaces:
-          {{- toYaml .allowedNamespaces | nindent 10 }}
+    {{- range .Values.volumes }}
+      - {{ . }}
     {{- end }}
