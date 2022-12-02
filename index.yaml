@@ -1,0 +1,18 @@
+apiVersion: v1
+entries:
+  pv-assembler:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2022-12-02T10:50:08.382916773Z"
+    description: A Helm chart for the configmap-like CR -> persistent volume synchronization
+      controller
+    digest: b61b0d7c878b4122425ce2be23f441db7e339e613a3048044f6030333338fa35
+    home: https://github.com/ilya-epifanov/k8s-pv-assembler
+    maintainers:
+    - email: elijah.epifanov@gmail.com
+      name: Ilya Epifanov
+    name: pv-assembler
+    urls:
+    - https://github.com/ilya-epifanov/k8s-pv-assembler/releases/download/pv-assembler-chart-0.1.0-1/pv-assembler-0.1.0-1.tgz
+    version: 0.1.0-1
+generated: "2022-12-02T10:50:08.382922073Z"
